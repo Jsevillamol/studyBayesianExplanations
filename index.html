@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  
+  <title>
+  Survey BNs
+  </title>
+</head>
+
+<body>
+
+<div class="jumbotron text-center" id="index.html">
+<h1>
+Studying local explanations of Bayesian Networks
+</h1>
+</div>
+
+<div class="container">
+
+  <div class="row">
+  <div>
+  
+  <p> We have observed that: </p>
+  
+  <ul>
+  
+    <li>asia = yes</li>
+  
+    <li>smoke = no</li>
+  
+    <li>bronc = yes</li>
+  
+    <li>either = no</li>
+  
+    <li>dysp = yes</li>
+  
+  </ul>
+</div>
+  </div>
+
+  <div class="row">
+  
+<!-- Control visualization -->
+<div style="text-align:center;">
+<svg id="explanation_control_mistake" width="800" height="400"></svg>
+</div>
+
+<!-- Libraries for JSBayes-viz -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="/studyBayesianExplanations/static/node_modules/d3/d3.js"></script>
+<script src="/studyBayesianExplanations/static/node_modules/lodash/lodash.js"></script>
+<script src="/studyBayesianExplanations/static/node_modules/graphlib/dist/graphlib.core.js"></script>
+<script src="/studyBayesianExplanations/static/node_modules/dagre/dist/dagre.core.js"></script>
+<script src="/studyBayesianExplanations/static/node_modules/jsbayes/jsbayes.js"></script>
+<script src="/studyBayesianExplanations/static/node_modules/better-jsbayes-viz/jsbayes-viz.js"></script>
+
+<style>
+  svg { border: 1px solid black; }
+  svg g rect.node-shape { border-radius: 5px !important; fill:#cceeff !important; cursor: move; }
+  svg g text.node-name { font-weight: 800 !important }
+  svg g rect.node-bar { fill: DodgerBlue !important }
+  svg g text.node-value { fill:rgb(0,0,0) !important; font-size: 15px; cursor: pointer; }
+  svg line.edge-line { stroke:rgb(0,0,0) !important }
+  svg path.edge-head { fill:rgb(0,0,0) !important }
+</style>
+
+<script>
+    
+  var graph = jsbayes.newGraph();
+  graph.saveSamples = false;
+  
+  <!-- Add nodes to graph -->
+  
+  var asia = graph.addNode( 'asia', [ 'yes',   'no',  ]);
+  
+  var tub = graph.addNode( 'tub', [ 'yes',   'no',  ]);
+  
+  var smoke = graph.addNode( 'smoke', [ 'yes',   'no',  ]);
+  
+  var lung = graph.addNode( 'lung', [ 'yes',   'no',  ]);
+  
+  var bronc = graph.addNode( 'bronc', [ 'yes',   'no',  ]);
+  
+  var either = graph.addNode( 'either', [ 'yes',   'no',  ]);
+  
+  var xray = graph.addNode( 'xray', [ 'yes',   'no',  ]);
+  
+  var dysp = graph.addNode( 'dysp', [ 'yes',   'no',  ]);
+  
+  
+  <!-- Add edges to graph -->
+  
+  tub.addParent(asia);
+  
+  either.addParent(tub);
+  
+  lung.addParent(smoke);
+  
+  bronc.addParent(smoke);
+  
+  either.addParent(lung);
+  
+  dysp.addParent(bronc);
+  
+  xray.addParent(either);
+  
+  dysp.addParent(either);
+  
+  
+  <!-- Add CPDs to graph -->
+  
+  asia.setCpt([0.01, 0.99]);
+  
+  tub.setCpt([[0.05, 0.95], [0.01, 0.99]]);
+  
+  smoke.setCpt([0.5, 0.5]);
+  
+  lung.setCpt([[0.1, 0.9], [0.01, 0.99]]);
+  
+  bronc.setCpt([[0.6, 0.4], [0.3, 0.7]]);
+  
+  either.setCpt([[1.0, 0.0], [1.0, 0.0], [1.0, 0.0], [0.0, 1.0]]);
+  
+  xray.setCpt([[0.98, 0.02], [0.05, 0.95]]);
+  
+  dysp.setCpt([[0.9, 0.1], [0.7, 0.3], [0.8, 0.2], [0.1, 0.9]]);
+  
+   
+  graph.reinit();
+  graph.sample(20000);
+
+  var g = jsbayesviz.fromGraph(graph, "explanation_control_mistake");
+  
+  jsbayesviz.draw({
+          id: '#explanation_control_mistake',
+          width: 800,
+          height: 400,
+          graph: g,
+          samples: 15000,
+          canBeObserved: true,
+        });
+</script>
+  </div>
+
+  <div class="row">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script type="text/javascript">
+(function() {
+emailjs.init("user_Ik5LrRhdDn7l1ZnBNoNJL");
+})();
+</script>
+<script type="text/javascript">
+    window.onload = function() {
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            // generate a five digit number for the contact_number variable
+            this.contact_number.value = Math.random() * 100000 | 0;
+            // these IDs from the previous steps
+            emailjs.sendForm('service_8lmj9xh', 'template_dllt96o', this)
+                .then(function() {
+                    console.log('SUCCESS!');
+                }, function(error) {
+                    console.log('FAILED...', error);
+                });
+        });
+    }
+</script>
+<style>
+    /* Style inputs with type="text", select elements and textareas */
+input[type=text], select, textarea {
+  width: 100%; /* Full width */
+  padding: 12px; /* Some padding */ 
+  border: 1px solid #ccc; /* Gray border */
+  border-radius: 4px; /* Rounded borders */
+  box-sizing: border-box; /* Make sure that padding and width stays in place */
+  margin-top: 6px; /* Add a top margin */
+  margin-bottom: 16px; /* Bottom margin */
+  resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+/* Style the submit button with a specific background color etc */
+input[type=submit] {
+  background-color: #04AA6D;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* When moving the mouse over the submit button, add a darker green color */
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+/* Add a background color and some padding around the form */
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+</style>
+<form id="contact-form">
+    <input type="hidden" name="contact_number">
+    <label>What is the probability that the patient has lung cancer?</label>
+    <textarea name="result"></textarea>
+    <label>Why is this the case?</label>
+    <textarea name="explanation"></textarea>
+    <label>How did you arrive at the explanation above?</label>
+    <textarea name="process"></textarea>
+    <input type="submit" value="Send">
+</form>
+  </div>
+</div>
+</body>
